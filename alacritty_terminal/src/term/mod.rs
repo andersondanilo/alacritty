@@ -115,8 +115,13 @@ impl SizeInfo {
         dynamic_padding: bool,
     ) -> SizeInfo {
         if dynamic_padding {
+            let try_symmetric_padding = (padding_x - padding_y).abs() < 0.5;
             padding_x = Self::dynamic_padding(padding_x.floor(), width, cell_width);
             padding_y = Self::dynamic_padding(padding_y.floor(), height, cell_height);
+
+            if try_symmetric_padding && (padding_y - padding_x) > padding_x * 0.5 {
+                padding_x = Self::dynamic_padding(padding_y.floor(), width, cell_width);
+            }
         }
 
         let lines = (height - 2. * padding_y) / cell_height;
